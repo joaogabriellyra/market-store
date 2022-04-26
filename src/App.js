@@ -23,11 +23,10 @@ class App extends React.Component {
 
   render() {
     const { categories } = this.state;
-    console.log(categories);
     return (
       <BrowserRouter>
         <Switch>
-          <Route exact path="/" component={ Search } />
+          <Route exact path="/" render={ () => <Search categories={ categories } /> } />
           <Route path="/cart" component={ ShoppingCart } />
         </Switch>
       </BrowserRouter>
