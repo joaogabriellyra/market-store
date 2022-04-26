@@ -18,7 +18,9 @@ class App extends React.Component {
   render() {
     const { categories } = this.state;
     return (
-      <div />
+      <div>
+        {categories}
+      </div>
     );
   }
 }
