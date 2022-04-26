@@ -32,5 +32,5 @@ export default class Search extends React.Component {
 }
 
 Search.propTypes = {
-  categories: PropTypes.string.isRequired,
+  categories: PropTypes.arrayOf(PropTypes.shape).isRequired,
 };
