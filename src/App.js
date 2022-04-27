@@ -7,6 +7,7 @@ import { getCategories } from './services/api';
 // componentes:
 import Search from './pages/Search';
 import ShoppingCart from './pages/ShoppingCart';
+import ProductDetails from './pages/ProductDetails';
 
 class App extends React.Component {
   constructor() {
@@ -28,6 +29,10 @@ class App extends React.Component {
         <Switch>
           <Route exact path="/" render={ () => <Search categories={ categories } /> } />
           <Route path="/cart" component={ ShoppingCart } />
+          <Route
+            path="/product/:id"
+            render={ (props) => <ProductDetails { ...props } /> }
+          />
         </Switch>
       </BrowserRouter>
     );
