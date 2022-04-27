@@ -13,30 +13,39 @@ export default class Search extends React.Component {
     super(props);
     this.state = {
       value: '',
-      categoryId: '',
+      category: '',
       productSearch: [],
     };
   }
 
   onFetchProducts = async () => {
-    const { value, categoryId } = this.state;
-    const search = await api.getProductsFromCategoryAndQuery(categoryId, value);
+    const { value, category } = this.state;
+    console.log(category, value);
+    const search = await api.getProductsFromCategoryAndQuery(category, value);
     return search;
+  }
+
+  onSearchProduct = async () => {
+    const search = await this.onFetchProducts();
+    const { results } = search;
+    this.setState({
+      productSearch: results,
+    });
   }
 
   onChangeHandle = ({ target }) => {
     const { value, name } = target;
     this.setState({
       [name]: value,
+    }, async () => {
+      if (name === 'category') {
+        this.onSearchProduct();
+      }
     });
   }
 
   onClickButton = async () => {
-    const search = await this.onFetchProducts();
-    const { results } = search;
-    this.setState({
-      productSearch: results,
-    });
+    this.onSearchProduct();
   }
 
   onDrawComponents = () => {
@@ -80,7 +89,13 @@ export default class Search extends React.Component {
             {categories.map((element) => (
               <label htmlFor={ element.id } data-testid="category" key={ element.id }>
                 {element.name}
-                <input type="radio" id={ element.id } name="category" />
+                <input
+                  type="radio"
+                  id={ element.id }
+                  name="category"
+                  value={ element.id }
+                  onChange={ this.onChangeHandle }
+                />
               </label>
             ))}
           </section>
