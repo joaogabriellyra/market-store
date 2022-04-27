@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 // Componentes
 import ProductList from '../components/ProductList';
@@ -52,6 +53,7 @@ export default class Search extends React.Component {
 
   render() {
     const { value } = this.state;
+    const { categories } = this.props;
     return (
       <main>
         <div>
@@ -73,8 +75,22 @@ export default class Search extends React.Component {
           </form>
           <Link to="/cart" data-testid="shopping-cart-button">Carrinho</Link>
         </div>
+        <div>
+          <section>
+            {categories.map((element) => (
+              <label htmlFor={ element.id } data-testid="category" key={ element.id }>
+                {element.name}
+                <input type="radio" id={ element.id } name="category" />
+              </label>
+            ))}
+          </section>
+        </div>
         { this.onDrawComponents() }
       </main>
     );
   }
 }
+
+Search.propTypes = {
+  categories: PropTypes.arrayOf(PropTypes.shape).isRequired,
+};
