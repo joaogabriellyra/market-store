@@ -14,6 +14,7 @@ class App extends React.Component {
     super();
     this.state = {
       categories: [],
+      cartItems: [],
     };
   }
 
@@ -23,12 +24,19 @@ class App extends React.Component {
   }
 
   render() {
-    const { categories } = this.state;
+    const { categories, cartItems } = this.state;
     return (
       <BrowserRouter>
         <Switch>
-          <Route exact path="/" render={ () => <Search categories={ categories } /> } />
-          <Route path="/cart" component={ ShoppingCart } />
+          <Route
+            exact
+            path="/"
+            render={ () => (<Search
+              categories={ categories }
+              cartItems={ cartItems }
+            />) }
+          />
+          <Route path="/cart" render={ () => <ShoppingCart cartItems={ cartItems } /> } />
           <Route
             path="/product/:id"
             render={ (props) => <ProductDetails { ...props } /> }
