@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
-// Title, thumbnail, price
-
 export default class ProductList extends React.Component {
   render() {
     const { produts, onClick } = this.props;
