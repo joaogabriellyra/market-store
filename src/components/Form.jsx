@@ -53,10 +53,6 @@ export default class Form extends React.Component {
     });
   }
 
-  update = (name, newValue) => {
-    this.setState({ [name]: newValue });
-  }
-
   render() {
     const { email, comment, rating, listComments, disabled, redirect } = this.state;
     return (
