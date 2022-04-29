@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 // Funções
 import { getProductsDetails } from '../services/api';
+import Form from '../components/Form';
 
 export default class ProductDetails extends React.Component {
   constructor(props) {
@@ -26,12 +27,17 @@ export default class ProductDetails extends React.Component {
     const { details } = this.state;
     return (
       <div>
-        <h2 data-testid="product-detail-name">
-          {details.title}
-        </h2>
-        <img src={ details.thumbnail } alt={ `imagem do produto ${details.title}` } />
-        <p>{`R$ ${details.price}`}</p>
-        <p>{details.description}</p>
+        <div>
+          <h2 data-testid="product-detail-name">
+            {details.title}
+          </h2>
+          <img src={ details.thumbnail } alt={ `imagem do produto ${details.title}` } />
+          <p>{`R$ ${details.price}`}</p>
+          <p>{details.description}</p>
+        </div>
+        <div>
+          <Form />
+        </div>
       </div>
     );
   }
