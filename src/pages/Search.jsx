@@ -18,35 +18,36 @@ export default class Search extends React.Component {
     };
   }
 
-  addProduct = (productItem, idProduct) => {
-    const { cartItems } = this.props;
-    const product = {
-      id: idProduct,
-      product: productItem,
-      quantity: 1,
-    };
-    cartItems.push(product);
-  }
+  // addProduct = (productItem, idProduct) => {
+  //   const { cartItems } = this.props;
+  //   const product = {
+  //     id: idProduct,
+  //     product: productItem,
+  //     quantity: 1,
+  //   };
+  //   cartItems.push(product);
+  //   this.setState({});
+  // }
 
-  addItemToCart = ({ target }) => {
-    const idProduct = target.name;
-    const { productSearch } = this.state;
-    const { cartItems } = this.props;
-    const itemNumber = target.id;
-    if (cartItems.length <= 0) {
-      this.addProduct(productSearch[itemNumber], idProduct);
-    } else {
-      const verify = cartItems.some(({ id }) => id === idProduct);
-      if (!verify) {
-        this.addProduct(productSearch[itemNumber], idProduct);
-      } else {
-        cartItems.forEach((item) => {
-          const { id } = item;
-          if (id === idProduct) item.quantity += 1;
-        });
-      }
-    }
-  }
+  // addItemToCart = ({ target }) => {
+  //   const idProduct = target.name;
+  //   const { productSearch } = this.state;
+  //   const { cartItems } = this.props;
+  //   const itemNumber = target.id;
+  //   if (cartItems.length <= 0) {
+  //     this.addProduct(productSearch[itemNumber], idProduct);
+  //   } else {
+  //     const verify = cartItems.some(({ id }) => id === idProduct);
+  //     if (!verify) {
+  //       this.addProduct(productSearch[itemNumber], idProduct);
+  //     } else {
+  //       cartItems.forEach((item) => {
+  //         const { id } = item;
+  //         if (id === idProduct) item.quantity += 1;
+  //       });
+  //     }
+  //   }
+  // }
 
   onFetchProducts = async () => {
     const { value, category } = this.state;
@@ -55,8 +56,10 @@ export default class Search extends React.Component {
   }
 
   onSearchProduct = async () => {
+    const { productList } = this.props;
     const search = await this.onFetchProducts();
     const { results } = search;
+    productList(results);
     this.setState({
       productSearch: results,
     });
@@ -79,6 +82,7 @@ export default class Search extends React.Component {
 
   onDrawComponents = () => {
     const { productSearch } = this.state;
+    const { addItem } = this.props;
     if (productSearch.length <= 0) {
       return (
         <p data-testid="home-initial-message">
@@ -86,7 +90,7 @@ export default class Search extends React.Component {
         </p>
       );
     }
-    return <ProductList produts={ productSearch } onClick={ this.addItemToCart } />;
+    return <ProductList produts={ productSearch } onClick={ addItem } />;
   }
 
   render() {
@@ -138,5 +142,6 @@ export default class Search extends React.Component {
 
 Search.propTypes = {
   categories: PropTypes.arrayOf(PropTypes.shape).isRequired,
-  cartItems: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  addItem: PropTypes.func.isRequired,
+  productList: PropTypes.func.isRequired,
 };
