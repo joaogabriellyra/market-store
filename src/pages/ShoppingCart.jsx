@@ -35,6 +35,7 @@ export default class ShoppingCart extends React.Component {
             name="increase-quantity"
             onClick={ modifyQuantity }
             value={ id }
+            disabled={ !cartItem.stockAvailable }
           >
             +
           </button>
