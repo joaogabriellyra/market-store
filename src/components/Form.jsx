@@ -1,17 +1,17 @@
 import React from 'react';
 import propTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
 
 export default class Form extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       email: '',
       comment: '',
       rating: '',
       listComments: [],
       disabled: true,
-      redirect: false,
+      idProduct: '',
     };
   }
 
@@ -20,6 +20,16 @@ export default class Form extends React.Component {
     if (get !== null) {
       this.setState({
         listComments: JSON.parse(get),
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const { id } = this.props;
+    if (id !== prevProps.id) {
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({
+        idProduct: id,
       });
     }
   }
@@ -43,10 +53,10 @@ export default class Form extends React.Component {
   }
 
   handleClick = () => {
-    const { email, comment, rating } = this.state;
-    const resultComment = { email, comment, rating };
+    const { email, comment, rating, idProduct } = this.state;
+    const resultComment = { email, comment, rating, idProduct };
     this.setState((old) => ({
-      listComments: [...old.listComments, resultComment],
+      listComments: [...old.listComments, resultComment, idProduct],
     }), () => {
       const { listComments } = this.state;
       localStorage.setItem('comments', JSON.stringify(listComments));
@@ -54,12 +64,13 @@ export default class Form extends React.Component {
   }
 
   render() {
-    const { email, comment, rating, listComments, disabled, redirect } = this.state;
+    const { idProduct } = this.state;
+    const { email, comment, rating, listComments, disabled } = this.state;
+    const filtered = listComments.filter((item) => item.idProduct === idProduct);
+    console.log(filtered);
     return (
       <>
-        {
-          redirect ? <Redirect to="/product/:id" /> : ''
-        }
+        <p>{`olá o id é ${idProduct}`}</p>
         <form action="">
           <label htmlFor="email">
             <input
@@ -99,13 +110,21 @@ export default class Form extends React.Component {
             Avaliar
           </button>
         </form>
-        {listComments.length > 0 && listComments.map((review, index) => (
-          <div key={ index }>
-            <p>{ review.email }</p>
-            <p>{ review.rating }</p>
-            <p>{ review.comment }</p>
-          </div>
-        ))}
+        {
+          filtered.length <= 0 ? (
+            <p>Não há nenhuma avaliação</p>
+          )
+
+            : (
+              filtered.length > 0 && filtered.map((review, index) => (
+                <div key={ index }>
+                  <p>{ review.email }</p>
+                  <p>{ review.rating }</p>
+                  <p>{ review.comment }</p>
+                </div>
+              ))
+            )
+        }
       </>
 
     );
@@ -113,9 +132,5 @@ export default class Form extends React.Component {
 }
 
 Form.propTypes = {
-  match: propTypes.shape({
-    params: propTypes.shape({
-      id: propTypes.string,
-    }),
-  }).isRequired,
+  id: propTypes.string.isRequired,
 };
