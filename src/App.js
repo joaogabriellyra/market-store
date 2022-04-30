@@ -44,6 +44,7 @@ class App extends React.Component {
       id: idProduct,
       product: productItem,
       quantity: 1,
+      stockAvailable: true,
     };
     this.setState((prevState) => ({
       cartItems: [...prevState.cartItems, product],
@@ -63,8 +64,14 @@ class App extends React.Component {
         this.addProduct(productSearch[itemNumber], idProduct);
       } else {
         cartItems.forEach((item) => {
-          const { id } = item;
-          if (id === idProduct) item.quantity += 1;
+          const { id, product } = item;
+          const availableQuantity = product.available_quantity;
+          if (id === idProduct) {
+            item.quantity += 1;
+            if (item.quantity >= availableQuantity) {
+              item.stockAvailable = false;
+            }
+          }
           this.onCalculateTotalPayable();
         });
       }
@@ -88,16 +95,34 @@ class App extends React.Component {
       cartItems.forEach((item) => {
         const { id } = item;
         if (id === idProduct && item.quantity > 0) item.quantity -= 1;
+        item.stockAvailable = true;
       });
     }
     if (name === 'increase-quantity') {
       cartItems.forEach((item) => {
-        const { id } = item;
-        if (id === idProduct) item.quantity += 1;
+        const { id, product } = item;
+        const availableQuantity = product.available_quantity;
+        if (id === idProduct) {
+          if (item.quantity < availableQuantity) {
+            item.quantity += 1;
+          } else if (item.quantity >= availableQuantity) {
+            item.stockAvailable = false;
+          }
+        }
       });
     }
     this.onCalculateTotalPayable();
     this.setState({});
+  }
+
+  onCalculateTotalProducts = () => {
+    const { cartItems } = this.state;
+    let sumTotal = 0;
+    cartItems.forEach((item) => {
+      const { quantity } = item;
+      sumTotal += quantity;
+    });
+    return sumTotal;
   }
 
   render() {
@@ -113,6 +138,7 @@ class App extends React.Component {
               cartItems={ cartItems }
               productList={ this.addProductSearch }
               addItem={ this.addItemToCart }
+              totalProducts={ this.onCalculateTotalProducts }
             />) }
           />
           <Route
@@ -126,7 +152,11 @@ class App extends React.Component {
           />
           <Route
             path="/product/:id"
-            render={ (props) => <ProductDetails { ...props } /> }
+            render={ (props) => (<ProductDetails
+              { ...props }
+              cartItems={ cartItems }
+              totalProducts={ this.onCalculateTotalProducts }
+            />) }
           />
         </Switch>
       </BrowserRouter>
