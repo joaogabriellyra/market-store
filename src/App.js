@@ -21,7 +21,24 @@ class App extends React.Component {
 
   async componentDidMount() {
     const result = await getCategories();
-    this.setState({ categories: result });
+    const getItens = JSON.parse(localStorage.getItem('shoppingCart'));
+    if (getItens !== null) {
+      this.setState({
+        categories: result,
+        cartItems: getItens,
+      }, async () => {
+        await this.onCalculateTotalPayable();
+      });
+    } else {
+      this.setState({
+        categories: result,
+      });
+    }
+  }
+
+  onSetLocalStore = () => {
+    const { cartItems } = this.state;
+    localStorage.setItem('shoppingCart', JSON.stringify(cartItems));
   }
 
   addProductSearch = (productList) => {
@@ -47,25 +64,55 @@ class App extends React.Component {
     };
     this.setState((prevState) => ({
       cartItems: [...prevState.cartItems, product],
-    }), this.onCalculateTotalPayable);
+    }), async () => {
+      await this.onCalculateTotalPayable();
+      await this.onSetLocalStore();
+    });
+  }
+
+  onVerifyQuantity = (idProduct) => {
+    const { cartItems } = this.state;
+    cartItems.forEach((item) => {
+      const { id, product } = item;
+      const availableQuantity = product.available_quantity;
+      if (id === idProduct) {
+        item.quantity += 1;
+        if (item.quantity >= availableQuantity) {
+          item.stockAvailable = false;
+        }
+      }
+      this.setState({}, async () => {
+        await this.onCalculateTotalPayable();
+        await this.onSetLocalStore();
+      });
+    });
   }
 
   addProductByDetails = ({ target }) => {
-    const { productSearch } = this.state;
-    productSearch.forEach((item) => {
-      const { id } = item;
-      if (id === target.value) {
-        const product = {
-          id,
-          product: item,
-          quantity: 1,
-          stockAvailable: true,
-        };
-        this.setState((prevState) => ({
-          cartItems: [...prevState.cartItems, product],
-        }), this.onCalculateTotalPayable);
-      }
-    });
+    const { productSearch, cartItems } = this.state;
+    const idProduct = target.value;
+    const verify = cartItems.some(({ id }) => id === idProduct);
+    if (!verify) {
+      productSearch.forEach((item) => {
+        const { id } = item;
+        if (id === idProduct) {
+          const product = {
+            id,
+            product: item,
+            quantity: 1,
+            stockAvailable: true,
+          };
+          this.setState((prevState) => ({
+            cartItems: [...prevState.cartItems, product],
+          }), async () => {
+            await this.onCalculateTotalPayable();
+            await this.onSetLocalStore();
+          });
+        }
+      });
+    } else {
+      this.onVerifyQuantity(idProduct);
+    }
   }
 
   addItemToCart = ({ target }) => {
@@ -80,17 +127,7 @@ class App extends React.Component {
       if (!verify) {
         this.addProduct(productSearch[itemNumber], idProduct);
       } else {
-        cartItems.forEach((item) => {
-          const { id, product } = item;
-          const availableQuantity = product.available_quantity;
-          if (id === idProduct) {
-            item.quantity += 1;
-            if (item.quantity >= availableQuantity) {
-              item.stockAvailable = false;
-            }
-          }
-          this.onCalculateTotalPayable();
-        });
+        this.onVerifyQuantity(idProduct);
       }
     }
   }
@@ -101,6 +138,8 @@ class App extends React.Component {
     const newCartItems = cartItems.filter(({ id }) => id !== idProduct);
     this.setState({
       cartItems: newCartItems,
+    }, async () => {
+      await this.onSetLocalStore();
     });
   }
 
@@ -130,6 +169,7 @@ class App extends React.Component {
     }
     this.onCalculateTotalPayable();
     this.setState({});
+    this.onSetLocalStore();
   }
 
   onCalculateTotalProducts = () => {
