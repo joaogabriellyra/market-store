@@ -15,6 +15,13 @@ export default class ProductList extends React.Component {
                 <Link data-testid="product-detail-link" to={ `/product/${id}` }>
                   <img src={ thumbnail } alt={ `imagem do produto ${title}` } />
                   <h3>{title}</h3>
+                  {
+                    product.shipping.free_shipping ? (
+                      <p data-testid="free-shipping">
+                        Frete Grátis
+                      </p>
+                    ) : ''
+                  }
                   <p>{price}</p>
                 </Link>
                 <button
@@ -25,7 +32,6 @@ export default class ProductList extends React.Component {
                   name={ id }
                 >
                   Adicionar ao carrinho!
-
                 </button>
               </div>
             );
