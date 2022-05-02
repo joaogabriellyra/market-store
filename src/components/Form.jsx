@@ -64,13 +64,10 @@ export default class Form extends React.Component {
   }
 
   render() {
-    const { idProduct } = this.state;
-    const { email, comment, rating, listComments, disabled } = this.state;
+    const { email, comment, rating, listComments, disabled, idProduct } = this.state;
     const filtered = listComments.filter((item) => item.idProduct === idProduct);
-    console.log(filtered);
     return (
       <>
-        <p>{`olá o id é ${idProduct}`}</p>
         <form action="">
           <label htmlFor="email">
             <input
@@ -85,6 +82,7 @@ export default class Form extends React.Component {
           </label>
 
           <select name="rating" value={ rating } onChange={ this.onHandleChange }>
+            <option value="0" data-testid="0-rating">0</option>
             <option value="1" data-testid="1-rating">1</option>
             <option value="2" data-testid="2-rating">2</option>
             <option value="3" data-testid="3-rating">3</option>
@@ -106,17 +104,13 @@ export default class Form extends React.Component {
             disabled={ disabled }
             onClick={ this.handleClick }
           >
-            {' '}
             Avaliar
           </button>
         </form>
         {
-          filtered.length <= 0 ? (
-            <p>Não há nenhuma avaliação</p>
-          )
-
+          filtered.length <= 0 ? (<p>Não há nenhuma avaliação</p>)
             : (
-              filtered.length > 0 && filtered.map((review, index) => (
+              filtered.map((review, index) => (
                 <div key={ index }>
                   <p>{ review.email }</p>
                   <p>{ review.rating }</p>
