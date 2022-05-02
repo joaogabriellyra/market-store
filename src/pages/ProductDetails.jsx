@@ -26,7 +26,8 @@ export default class ProductDetails extends React.Component {
   }
 
   render() {
-    const { details: { title, thumbnail, price, description, id }, products } = this.state;
+    const { details: { title, thumbnail, price, description, id } } = this.state;
+    const { products } = this.state;
     const { addProductByDetails, cartItems, totalProducts } = this.props;
     return (
       <div>

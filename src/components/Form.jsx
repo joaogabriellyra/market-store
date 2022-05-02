@@ -1,7 +1,5 @@
 import React from 'react';
 import propTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
-
 
 export default class Form extends React.Component {
   constructor(props) {
@@ -122,7 +120,6 @@ export default class Form extends React.Component {
             )
         }
       </>
-
     );
   }
 }
