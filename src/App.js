@@ -51,6 +51,25 @@ class App extends React.Component {
     }), this.onCalculateTotalPayable);
   }
 
+  addProductByDetails = ({ target }) => {
+    console.log(target.name, target.value);
+    const { productSearch } = this.state;
+    productSearch.forEach((item) => {
+      const { id } = item;
+      if (id === target.value) {
+        const product = {
+          id,
+          product: item,
+          quantity: 1,
+          stockAvailable: true,
+        };
+        this.setState((prevState) => ({
+          cartItems: [...prevState.cartItems, product],
+        }), this.onCalculateTotalPayable);
+      }
+    });
+  }
+
   addItemToCart = ({ target }) => {
     const idProduct = target.name;
     const { productSearch } = this.state;
@@ -155,6 +174,7 @@ class App extends React.Component {
             render={ (props) => (<ProductDetails
               { ...props }
               cartItems={ cartItems }
+              addProductByDetails={ this.addProductByDetails }
               totalProducts={ this.onCalculateTotalProducts }
             />) }
           />
