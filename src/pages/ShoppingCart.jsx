@@ -35,6 +35,7 @@ export default class ShoppingCart extends React.Component {
             name="increase-quantity"
             onClick={ modifyQuantity }
             value={ id }
+            disabled={ !cartItem.stockAvailable }
           >
             +
           </button>
@@ -48,7 +49,12 @@ export default class ShoppingCart extends React.Component {
     return (
       <div>
         <p>{ `Valor Total da Compra R$ ${totalPayable}` }</p>
-        <button type="button">Finalizar Compra</button>
+        <button
+          type="button"
+          data-testid="shopping-cart-button"
+        >
+          Finalizar Compra
+        </button>
       </div>
     );
   }

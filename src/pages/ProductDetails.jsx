@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+// Componentes
+import Header from '../components/Header';
+
 // Funções
 import { getProductsDetails } from '../services/api';
 import Form from '../components/Form';
@@ -22,20 +25,29 @@ export default class ProductDetails extends React.Component {
     });
   }
 
-  // nome do produto, imagem, preço e especificação técnica
-
   render() {
-    const { details, products } = this.state;
+    const { details: { title, thumbnail, price, description, id }, products } = this.state;
+    const { addProductByDetails, cartItems, totalProducts } = this.props;
     return (
       <div>
+        <Header cartItems={ cartItems } totalProducts={ totalProducts } />
         <div>
           <h2 data-testid="product-detail-name">
-            {details.title}
+            {title}
           </h2>
-          <img src={ details.thumbnail } alt={ `imagem do produto ${details.title}` } />
-          <p>{`R$ ${details.price}`}</p>
-          <p>{details.description}</p>
+          <img src={ thumbnail } alt={ `imagem do produto ${title}` } />
+          <p>{`R$ ${price}`}</p>
+          <p>{description}</p>
         </div>
+        <button
+          data-testid="product-detail-add-to-cart"
+          type="button"
+          onClick={ addProductByDetails }
+          value={ id }
+          name={ title }
+        >
+          Adicionar ao carrinho
+        </button>
         <div>
           <Form id={ products } />
         </div>
@@ -46,4 +58,7 @@ export default class ProductDetails extends React.Component {
 
 ProductDetails.propTypes = {
   match: PropTypes.objectOf(PropTypes.shape).isRequired,
+  cartItems: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  totalProducts: PropTypes.func.isRequired,
+  addProductByDetails: PropTypes.func.isRequired,
 };

@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import { getCategories } from './services/api';
@@ -22,7 +21,24 @@ class App extends React.Component {
 
   async componentDidMount() {
     const result = await getCategories();
-    this.setState({ categories: result });
+    const getItens = JSON.parse(localStorage.getItem('shoppingCart'));
+    if (getItens !== null) {
+      this.setState({
+        categories: result,
+        cartItems: getItens,
+      }, async () => {
+        await this.onCalculateTotalPayable();
+      });
+    } else {
+      this.setState({
+        categories: result,
+      });
+    }
+  }
+
+  onSetLocalStore = () => {
+    const { cartItems } = this.state;
+    localStorage.setItem('shoppingCart', JSON.stringify(cartItems));
   }
 
   addProductSearch = (productList) => {
@@ -44,10 +60,59 @@ class App extends React.Component {
       id: idProduct,
       product: productItem,
       quantity: 1,
+      stockAvailable: true,
     };
     this.setState((prevState) => ({
       cartItems: [...prevState.cartItems, product],
-    }), this.onCalculateTotalPayable);
+    }), async () => {
+      await this.onCalculateTotalPayable();
+      await this.onSetLocalStore();
+    });
+  }
+
+  onVerifyQuantity = (idProduct) => {
+    const { cartItems } = this.state;
+    cartItems.forEach((item) => {
+      const { id, product } = item;
+      const availableQuantity = product.available_quantity;
+      if (id === idProduct) {
+        item.quantity += 1;
+        if (item.quantity >= availableQuantity) {
+          item.stockAvailable = false;
+        }
+      }
+      this.setState({}, async () => {
+        await this.onCalculateTotalPayable();
+        await this.onSetLocalStore();
+      });
+    });
+  }
+
+  addProductByDetails = ({ target }) => {
+    const { productSearch, cartItems } = this.state;
+    const idProduct = target.value;
+    const verify = cartItems.some(({ id }) => id === idProduct);
+    if (!verify) {
+      productSearch.forEach((item) => {
+        const { id } = item;
+        if (id === idProduct) {
+          const product = {
+            id,
+            product: item,
+            quantity: 1,
+            stockAvailable: true,
+          };
+          this.setState((prevState) => ({
+            cartItems: [...prevState.cartItems, product],
+          }), async () => {
+            await this.onCalculateTotalPayable();
+            await this.onSetLocalStore();
+          });
+        }
+      });
+    } else {
+      this.onVerifyQuantity(idProduct);
+    }
   }
 
   addItemToCart = ({ target }) => {
@@ -62,11 +127,7 @@ class App extends React.Component {
       if (!verify) {
         this.addProduct(productSearch[itemNumber], idProduct);
       } else {
-        cartItems.forEach((item) => {
-          const { id } = item;
-          if (id === idProduct) item.quantity += 1;
-          this.onCalculateTotalPayable();
-        });
+        this.onVerifyQuantity(idProduct);
       }
     }
   }
@@ -77,6 +138,8 @@ class App extends React.Component {
     const newCartItems = cartItems.filter(({ id }) => id !== idProduct);
     this.setState({
       cartItems: newCartItems,
+    }, async () => {
+      await this.onSetLocalStore();
     });
   }
 
@@ -88,16 +151,35 @@ class App extends React.Component {
       cartItems.forEach((item) => {
         const { id } = item;
         if (id === idProduct && item.quantity > 0) item.quantity -= 1;
+        item.stockAvailable = true;
       });
     }
     if (name === 'increase-quantity') {
       cartItems.forEach((item) => {
-        const { id } = item;
-        if (id === idProduct) item.quantity += 1;
+        const { id, product } = item;
+        const availableQuantity = product.available_quantity;
+        if (id === idProduct) {
+          if (item.quantity < availableQuantity) {
+            item.quantity += 1;
+          } else if (item.quantity >= availableQuantity) {
+            item.stockAvailable = false;
+          }
+        }
       });
     }
     this.onCalculateTotalPayable();
     this.setState({});
+    this.onSetLocalStore();
+  }
+
+  onCalculateTotalProducts = () => {
+    const { cartItems } = this.state;
+    let sumTotal = 0;
+    cartItems.forEach((item) => {
+      const { quantity } = item;
+      sumTotal += quantity;
+    });
+    return sumTotal;
   }
 
   render() {
@@ -113,6 +195,7 @@ class App extends React.Component {
               cartItems={ cartItems }
               productList={ this.addProductSearch }
               addItem={ this.addItemToCart }
+              totalProducts={ this.onCalculateTotalProducts }
             />) }
           />
           <Route
@@ -126,7 +209,12 @@ class App extends React.Component {
           />
           <Route
             path="/product/:id"
-            render={ (props) => <ProductDetails { ...props } /> }
+            render={ (props) => (<ProductDetails
+              { ...props }
+              cartItems={ cartItems }
+              addProductByDetails={ this.addProductByDetails }
+              totalProducts={ this.onCalculateTotalProducts }
+            />) }
           />
         </Switch>
       </BrowserRouter>
