@@ -52,7 +52,6 @@ class App extends React.Component {
   }
 
   addProductByDetails = ({ target }) => {
-    console.log(target.name, target.value);
     const { productSearch } = this.state;
     productSearch.forEach((item) => {
       const { id } = item;

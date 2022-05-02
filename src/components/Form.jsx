@@ -1,5 +1,4 @@
 import React from 'react';
-import propTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 
 export default class Form extends React.Component {
@@ -111,11 +110,3 @@ export default class Form extends React.Component {
     );
   }
 }
-
-Form.propTypes = {
-  match: propTypes.shape({
-    params: propTypes.shape({
-      id: propTypes.string,
-    }),
-  }).isRequired,
-};
