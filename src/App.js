@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import { getCategories } from './services/api';
