@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+// Componentes
+import Header from '../components/Header';
+
 // Funções
 import { getProductsDetails } from '../services/api';
 import Form from '../components/Form';
@@ -25,8 +28,10 @@ export default class ProductDetails extends React.Component {
 
   render() {
     const { details } = this.state;
+    const { cartItems, totalProducts } = this.props;
     return (
       <div>
+        <Header cartItems={ cartItems } totalProducts={ totalProducts } />
         <div>
           <h2 data-testid="product-detail-name">
             {details.title}
@@ -45,4 +50,6 @@ export default class ProductDetails extends React.Component {
 
 ProductDetails.propTypes = {
   match: PropTypes.objectOf(PropTypes.shape).isRequired,
+  cartItems: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  totalProducts: PropTypes.func.isRequired,
 };

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 // Componentes
 import ProductList from '../components/ProductList';
+import Header from '../components/Header';
 
 // funções
 import * as api from '../services/api';
@@ -17,37 +18,6 @@ export default class Search extends React.Component {
       productSearch: [],
     };
   }
-
-  // addProduct = (productItem, idProduct) => {
-  //   const { cartItems } = this.props;
-  //   const product = {
-  //     id: idProduct,
-  //     product: productItem,
-  //     quantity: 1,
-  //   };
-  //   cartItems.push(product);
-  //   this.setState({});
-  // }
-
-  // addItemToCart = ({ target }) => {
-  //   const idProduct = target.name;
-  //   const { productSearch } = this.state;
-  //   const { cartItems } = this.props;
-  //   const itemNumber = target.id;
-  //   if (cartItems.length <= 0) {
-  //     this.addProduct(productSearch[itemNumber], idProduct);
-  //   } else {
-  //     const verify = cartItems.some(({ id }) => id === idProduct);
-  //     if (!verify) {
-  //       this.addProduct(productSearch[itemNumber], idProduct);
-  //     } else {
-  //       cartItems.forEach((item) => {
-  //         const { id } = item;
-  //         if (id === idProduct) item.quantity += 1;
-  //       });
-  //     }
-  //   }
-  // }
 
   onFetchProducts = async () => {
     const { value, category } = this.state;
@@ -95,7 +65,7 @@ export default class Search extends React.Component {
 
   render() {
     const { value } = this.state;
-    const { categories } = this.props;
+    const { categories, totalProducts, cartItems } = this.props;
     return (
       <main>
         <Link to="/cart" />
@@ -116,7 +86,7 @@ export default class Search extends React.Component {
               pesquisar
             </button>
           </form>
-          <Link to="/cart" data-testid="shopping-cart-button">Carrinho</Link>
+          <Header cartItems={ cartItems } totalProducts={ totalProducts } />
         </div>
         <div>
           <section>
@@ -142,6 +112,8 @@ export default class Search extends React.Component {
 
 Search.propTypes = {
   categories: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  cartItems: PropTypes.arrayOf(PropTypes.shape).isRequired,
   addItem: PropTypes.func.isRequired,
   productList: PropTypes.func.isRequired,
+  totalProducts: PropTypes.func.isRequired,
 };
