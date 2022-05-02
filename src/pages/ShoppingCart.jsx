@@ -49,7 +49,12 @@ export default class ShoppingCart extends React.Component {
     return (
       <div>
         <p>{ `Valor Total da Compra R$ ${totalPayable}` }</p>
-        <button type="button">Finalizar Compra</button>
+        <button
+          type="button"
+          data-testid="shopping-cart-button"
+        >
+          Finalizar Compra
+        </button>
       </div>
     );
   }

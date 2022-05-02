@@ -25,7 +25,6 @@ export default class ProductList extends React.Component {
                   name={ id }
                 >
                   Adicionar ao carrinho!
-
                 </button>
               </div>
             );
