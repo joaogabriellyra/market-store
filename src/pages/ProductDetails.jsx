@@ -18,13 +18,14 @@ export default class ProductDetails extends React.Component {
     const details = await getProductsDetails(params.id);
     this.setState({
       details: { ...details },
+      products: params.id,
     });
   }
 
   // nome do produto, imagem, preço e especificação técnica
 
   render() {
-    const { details } = this.state;
+    const { details, products } = this.state;
     return (
       <div>
         <div>
@@ -36,7 +37,7 @@ export default class ProductDetails extends React.Component {
           <p>{details.description}</p>
         </div>
         <div>
-          <Form />
+          <Form id={ products } />
         </div>
       </div>
     );
