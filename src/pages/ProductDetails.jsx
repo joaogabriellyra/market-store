@@ -21,11 +21,13 @@ export default class ProductDetails extends React.Component {
     const details = await getProductsDetails(params.id);
     this.setState({
       details: { ...details },
+      products: params.id,
     });
   }
 
   render() {
     const { details: { title, thumbnail, price, description, id } } = this.state;
+    const { products } = this.state;
     const { addProductByDetails, cartItems, totalProducts } = this.props;
     return (
       <div>
@@ -48,7 +50,7 @@ export default class ProductDetails extends React.Component {
           Adicionar ao carrinho
         </button>
         <div>
-          <Form />
+          <Form id={ products } />
         </div>
       </div>
     );
